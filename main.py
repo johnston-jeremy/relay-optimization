@@ -99,7 +99,7 @@ def run():
 
   manager = Manager()
   E = manager.list()
-  inputs = zip([E]*Nsamp*numP, [H1all]*Nsamp*numP, [H2all]*Nsamp*numP, [params]*Nsamp*numP, ind)
+  inputs = list(zip([E]*Nsamp*numP, [H1all]*Nsamp*numP, [H2all]*Nsamp*numP, [params]*Nsamp*numP, ind))
     
   
   with Pool() as pool:
