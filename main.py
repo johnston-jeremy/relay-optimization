@@ -11,6 +11,7 @@ Mu = np.min([Nu,Mb,Mr])
 
 # Pt = 100
 # Pr = 100
+Nsamp = 100
 H1all = np.random.randn(Nsamp, Mr, Mb)
 H2all = np.random.randn(Nsamp, Nu, Mr)
 
