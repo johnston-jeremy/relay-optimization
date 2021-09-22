@@ -83,46 +83,112 @@ def worker_svd(inputs):
 
     G2_diag = np.abs(np.diag(G2))**2
 
-    U, S, Vh = la.svd(H1)
-    set_trace()
+    S = la.svd(H1, compute_uv=False)
     # A = Qeq@(H1.T.conj())
-    A = H1@(Qeq.T.conj())
-    AHAdiag = np.array([np.linalg.norm(aa)**2 for aa in A.T])
+    # A = H1@(Qeq.T.conj())
+    # AHAdiag = np.array([np.linalg.norm(aa)**2 for aa in A.T])
 
-    h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in H2])
+    # h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in H2])
 
     p = cp.Variable(Mu, pos=True)
-    k = cp.Variable(Mr, pos=True)
-    gs = cp.Variable(pos=True)
+    k = cp.Variable(Mu, pos=True)
 
-    C1 = [gs*AHAdiag@p + Mr*sigma1**2*gs <= Pr]
+    C1 = [k @ (cp.multiply(S,p) + sigma1**2) <= Pr]
     C2 = [cp.sum(p) <= Pt]
-
-    a  = np.abs(G2[i,j])**2 * sigma1**2
-    b = sigma2**2
-    x = symbols('x')
+    # set_trace()
+    nuG = 1/(S**2*G2_diag[:Mu])
+    # b = nuG * sigma2**2
+    x = symbols('x:'+str(Mu))
     exp = 1
-    for aa,bb in zip(a,b):
-      exp = exp * (aa + bb*x)
+    for i in range(Mu):
+      expsum = 0
+      for j in range(i+1):
+        expsum += np.abs(G2[i,j])**2 * sigma1**2 + x[j] * sigma2**2
+      exp = exp * expsum
     expanded = expand(exp)
-    coeffdict = expanded.as_coefficients_dict()
-    coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
+    coeffdictsym = expanded.as_coefficients_dict()
+    coeffdict = {}
+    for i in coeffdictsym:
+      coeffdict[str(i)] = coeffdictsym[i]
+    # coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
 
-    x = coeffs[0]
-    for i in range(1, len(a)+1):
-      x += coeffs[i]*cp.power(gs,-i)
+    # x = coeffs[0]
+    coeff0 = None
+    coeffs = [{}]*Mu
+    res = []
+    for key in coeffdict:
+      # print(key)
+      # keystr = str(key)
+      if key[0] == '1':
+        coeff0 = coeffdict[key]
+      else: 
+        strlen = len(key)
+        i = 0
+        resinner = []
+        while(i < strlen):
+          if key[i] == 'x':
+            i += 1
+            num = ''
+            exponent = ''
+            while(i < strlen and key[i] != '*'):
+              num += key[i]
+              i += 1
+            if i == strlen:
+              exponent = '1'
+              pass
+            elif key[i] == '*':
+              i += 1
+              if(key[i]) == '*':
+                i += 1
+              # set_trace()
+                while(i < strlen and key[i] != '*'):
+                  exponent += key[i]
+                  i += 1 
+              else:
+                exponent = '1'
+          resinner.append((num, exponent, key))
+        res.append(resinner)
+        # print(res)
+        # set_trace()
 
-    obj = x*cp.prod(cp.inv_pos(p))
+        # coeffs[int(keystr[1])][int(keystr[-1])] = coeffdict[key]
+      # set_trace()
+
+    if coeff0 is not None:
+      x = coeff0
+    else:
+      x = 0
+      
+    for r in res:
+      term = 1
+      for rr in r:
+        # set_trace()
+        # term *= (coeffdict[rr[2]])**(1/len(r))*cp.power(k[int(rr[0])],-int(rr[1]))
+        term *= cp.power(k[int(rr[0])],-int(rr[1]))
+      x += term * coeffdict[rr[2]]
+      # set_trace()
+      # print(term)
+      # print(coeffdict[rr[2]])
+      # else:
+      #   set_trace()
+      #   x += coeffs[r[2]]*cp.power(k[int(r[0])],-int(r[1]))
+
+    obj = x*cp.prod(cp.inv_pos(p)) * np.prod(1/(S*G2_diag[:Mu]))
+    # print(obj.is_dgp())
+    # set_trace()
     constraints = C1+C2
     prob = cp.Problem(cp.Minimize(obj), constraints)
     prob.solve(gp=True, solver='ECOS')
-    gs_opt = gs.value
+    # set_trace()
+    k_opt = k.value
     p_opt = p.value
-    d_opt = Geq_diag * gs_opt
-    v_opt = gs_opt*h[:Mu] + sigma2**2
+    d_opt = G2_diag[:Mu] * k_opt * S
+    v_opt = []
+    for i in range(Mu):
+      v_opt.append(sum([np.abs(G2[i,j])**2 * k_opt[j] * sigma1**2 for j in range(i)]) + sigma2**2)
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
-
+    # print(sumrate)
     sumrate_trials.append(sumrate)
 
   sumrate_max = np.max(sumrate_trials)
@@ -138,7 +204,7 @@ def run(*args):
   sigma1 = sigma2 = 1
 
   numP = 6
-  Nsamp = 10
+  Nsamp = 100
 
   Plist = np.logspace(0.5,3,numP)
   params = (Mr,Mb,Nu,Mu,sigma1,sigma2,Plist)
@@ -166,7 +232,7 @@ def run(*args):
   
   with Pool() as pool:
     # pool.map(worker_allpass, inputs)
-    for _ in tqdm.tqdm(pool.imap_unordered(worker_allpass, inputs), total=len(inputs)):
+    for _ in tqdm.tqdm(pool.imap_unordered(worker_svd, inputs), total=len(inputs)):
       pass
   
   results = np.empty((numP, Nsamp))
@@ -179,4 +245,5 @@ def run(*args):
 
 
 if __name__ == '__main__':
+  # run('single')
   run()
