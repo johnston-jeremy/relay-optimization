@@ -103,7 +103,7 @@ def run():
     
   
   with Pool() as pool:
-    pool.map(worker_allpass, inputs)
+    # pool.map(worker_allpass, inputs)
     for _ in tqdm.tqdm(pool.imap_unordered(worker_allpass, inputs), total=len(inputs)):
       pass
   
