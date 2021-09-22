@@ -13,7 +13,7 @@ Pt = 100
 Pr = 100
 sumrates_vs_P = []
 for P in np.logspace(0.5,3,6):
-  print('P =' + str(10*np.log10(P)) +' dB')
+  print('P = ' + str(10*np.log10(P)) +' dB')
 
   H1 = np.random.randn(Mr, Mb)
   H2 = np.random.randn(Nu, Mr)
@@ -55,7 +55,7 @@ for P in np.logspace(0.5,3,6):
         exp = exp * (aa + bb*x)
       expanded = expand(exp)
       coeffdict = expanded.as_coefficients_dict()
-      coeffs = np.array([np.float(coeffdict[1])] + [np.float(coeffdict[x**k]) for k in range(1, len(a)+1)])
+      coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
 
       x = coeffs[0]
       for i in range(1, len(a)+1):
@@ -76,3 +76,4 @@ for P in np.logspace(0.5,3,6):
     
   # print(sumratesmax)
   sumrates_vs_P.append(np.mean(sumratesmax))
+print(sumrates_vs_P)
