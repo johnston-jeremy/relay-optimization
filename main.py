@@ -4,8 +4,8 @@ import cvxpy as cp
 from pdb import set_trace
 from sympy import expand, symbols, Integer, Mul, Sum, Float
 
-Mr = 300 # number of relay antennas
-Mb = 200 # number of BS antennas
+Mr = 3 # number of relay antennas
+Mb = 2 # number of BS antennas
 Nu = 5 # number of users
 Mu = np.min([Nu,Mb,Mr])
 
@@ -63,7 +63,8 @@ for P in np.logspace(0.5,3,6):
       expanded = expand(exp)
       coeffdict = expanded.as_coefficients_dict()
       coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
-
+      # print(coeffs)
+      # set_trace()
       x = coeffs[0]
       for i in range(1, len(a)+1):
         x += coeffs[i]*cp.power(gs,-i)
