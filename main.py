@@ -51,7 +51,7 @@ def worker_allpass(inputs):
     obj = x*cp.prod(cp.inv_pos(p))
     constraints = C1+C2
     prob = cp.Problem(cp.Minimize(obj), constraints)
-    prob.solve(gp=True, solver='mosek')
+    prob.solve(gp=True, solver='ECOS')
     gs_opt = gs.value
     p_opt = p.value
     d_opt = Geq_diag * gs_opt
