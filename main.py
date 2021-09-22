@@ -13,13 +13,12 @@ Pt = 100
 Pr = 100
 sumrates_vs_P = []
 for P in np.logspace(0.5,3,6):
-
+  print('P =' + str(10*np.log10(P)) +' dB')
 
   H1 = np.random.randn(Mr, Mb)
   H2 = np.random.randn(Nu, Mr)
   sumratesmax = []
   for niter1 in range(100):
-    print(niter1)
     sumrates = []
     for niter2 in range(10):
       
