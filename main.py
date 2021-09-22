@@ -4,16 +4,16 @@ import cvxpy as cp
 from pdb import set_trace
 from sympy import expand, symbols, Integer, Mul, Sum, Float
 
-Mr = 3 # number of relay antennas
-Mb = 2 # number of BS antennas
+Mr = 300 # number of relay antennas
+Mb = 200 # number of BS antennas
 Nu = 5 # number of users
 Mu = np.min([Nu,Mb,Mr])
 
 # Pt = 100
 # Pr = 100
 Nsamp = 100
-H1all = np.random.randn(Nsamp, Mr, Mb)
-H2all = np.random.randn(Nsamp, Nu, Mr)
+H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(2)
+H2all = (np.random.randn(Nsamp, Nu, Mr) + 1j*np.random.randn(Nsamp, Nu, Mr))/np.sqrt(2)
 
 sumrates_vs_P = []
 for P in np.logspace(0.5,3,6):
@@ -48,7 +48,8 @@ for P in np.logspace(0.5,3,6):
       d = gs * Geq_diag
       h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in H2])
 
-      AHAdiag = np.diag(A.T.conj() @ A)
+      AHAdiag = np.array([np.linalg.norm(aa)**2 for aa in A.T])
+      # set_trace()
 
       C1 = [gs*AHAdiag@p + Mr*sigma1**2*gs <= Pr]
       C2 = [cp.sum(p) <= Pt]
