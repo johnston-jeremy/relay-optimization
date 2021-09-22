@@ -4,6 +4,7 @@ import numpy.linalg as la
 import cvxpy as cp
 from pdb import set_trace
 from sympy import expand, symbols
+import tqdm
 
 
 def worker_allpass(inputs):
@@ -64,7 +65,7 @@ def worker_allpass(inputs):
   sumrate_max = np.max(sumrate_trials)
 
   E.append({'ind':ind, 'sumrate':sumrate_max})
-  print(len(E))
+  # print(len(E))
 
 def run():
   Mr = 3 # number of relay antennas
@@ -103,6 +104,8 @@ def run():
   
   with Pool() as pool:
     pool.map(worker_allpass, inputs)
+    for _ in tqdm.tqdm(pool.imap_unordered(worker_allpass, inputs), total=len(inputs)):
+      pass
   
   results = np.empty((numP, Nsamp))
   for e in E:
