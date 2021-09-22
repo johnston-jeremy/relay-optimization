@@ -11,17 +11,20 @@ Mu = np.min([Nu,Mb,Mr])
 
 # Pt = 100
 # Pr = 100
+H1all = np.random.randn(Nsamp, Mr, Mb)
+H2all = np.random.randn(Nsamp, Nu, Mr)
+
 sumrates_vs_P = []
 for P in np.logspace(0.5,3,6):
   print('P = ' + str(10*np.log10(P)) +' dB')
   Pt = P
   Pr = P
 
-  H1 = np.random.randn(Mr, Mb)
-  H2 = np.random.randn(Nu, Mr)
   sumratesmax = []
-  for niter1 in range(100):
+  for nsamp in range(Nsamp):
     sumrates = []
+    H1 = H1all[nsamp]
+    H2 = H2all[nsamp]
     for niter2 in range(10):
       
       Pi = np.eye(Nu)[np.random.permutation(Nu)]
