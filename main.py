@@ -9,11 +9,13 @@ Mb = 2 # number of BS antennas
 Nu = 5 # number of users
 Mu = np.min([Nu,Mb,Mr])
 
-Pt = 100
-Pr = 100
+# Pt = 100
+# Pr = 100
 sumrates_vs_P = []
 for P in np.logspace(0.5,3,6):
   print('P = ' + str(10*np.log10(P)) +' dB')
+  Pt = P
+  Pr = P
 
   H1 = np.random.randn(Mr, Mb)
   H2 = np.random.randn(Nu, Mr)
