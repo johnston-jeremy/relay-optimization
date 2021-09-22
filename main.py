@@ -209,8 +209,8 @@ def run(*args):
   Plist = np.logspace(0.5,3,numP)
   params = (Mr,Mb,Nu,Mu,sigma1,sigma2,Plist)
 
-  H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(2)
-  H2all = (np.random.randn(Nsamp, Nu, Mr) + 1j*np.random.randn(Nsamp, Nu, Mr))/np.sqrt(2)
+  H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(.2)
+  H2all = (np.random.randn(Nsamp, Nu, Mr) + 1j*np.random.randn(Nsamp, Nu, Mr))/np.sqrt(.2)
 
   H1mp = []
   H2mp = []
