@@ -223,8 +223,9 @@ def worker_svd(inputs):
     d_opt = G2_diag[:Mu] * k_opt * S
     v_opt = []
     for i in range(Mu):
-      v_opt.append(sum([np.abs(G2[i,j])**2 * k_opt[j] * sigma1**2 for j in range(i)]) + sigma2**2)
+      v_opt.append(sum([np.abs(G2[i,j])**2 * k_opt[j] * sigma1**2 for j in range(i+1)]) + sigma2**2)
 
+    # set_trace()
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
     # print(sumrate)
     sumrate_trials.append(sumrate)
