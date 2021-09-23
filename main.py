@@ -250,8 +250,8 @@ def run(Mr, Mb, Nu, method, single):
 
   Plist = np.logspace(0.5,3,numP)
 
-  numP = 1
-  Plist = [10**2]
+  # numP = 1
+  # Plist = [10**2]
   params = (Mr,Mb,Nu,Mu,sigma1,sigma2,Plist)
 
   H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(2)
@@ -304,9 +304,10 @@ if __name__ == '__main__':
   res = []
   
   # M = None
+  Nu = 5
   for method in ['svd','allpass']:
     # for M in [2,3,4,5]:
-    for Nu in [2,5,10,15,20]:
+    # for Nu in [2,5,10,15,20]:
       print('Nu =', Nu)
       res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=False))
   print(method)
