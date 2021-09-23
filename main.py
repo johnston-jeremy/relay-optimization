@@ -154,7 +154,7 @@ def worker_svd(inputs):
 
         # coeffs[int(keystr[1])][int(keystr[-1])] = coeffdict[key]
       # set_trace()
-    print(res)
+    print('res final', res)
     if coeff0 is not None:
       x = coeff0
     else:
@@ -173,7 +173,7 @@ def worker_svd(inputs):
       # else:
       #   set_trace()
       #   x += coeffs[r[2]]*cp.power(k[int(r[0])],-int(r[1]))
-
+    print('x',x)
     obj = x*cp.prod(cp.inv_pos(p)) * np.prod(1/(S*G2_diag[:Mu]))
     # print(obj.is_dgp())
     # set_trace()
