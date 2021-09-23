@@ -236,7 +236,7 @@ def run(M=None, *args):
     worker_svd(inputs[0])
     return
   
-  with Pool() as pool:
+  with Pool(processes=6) as pool:
     # pool.map(worker_allpass, inputs)
     for _ in tqdm.tqdm(pool.imap_unordered(worker_svd, inputs), total=len(inputs)):
       pass
@@ -252,5 +252,5 @@ def run(M=None, *args):
 
 if __name__ == '__main__':
   # run('single')
-  for M in [2,3,4,5]:
+  for M in [3,4,5]:
     run(M)
