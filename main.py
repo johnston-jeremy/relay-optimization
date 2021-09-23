@@ -116,7 +116,7 @@ def worker_svd(inputs):
     coeff0 = None
     coeffs = [{}]*Mu
     res = []
-    print(coeffdict)
+    # print(coeffdict)
     for key in coeffdict:
       # print(key)
       # keystr = str(key)
@@ -126,6 +126,9 @@ def worker_svd(inputs):
         strlen = len(key)
         i = 0
         resinner = []
+        # print(key)
+        # set_trace()
+
         while(i < strlen):
           if key[i] == 'x':
             i += 1
@@ -138,24 +141,25 @@ def worker_svd(inputs):
               exponent = '1'
               pass
             elif key[i] == '*':
-              i += 1
-              if(key[i]) == '*':
-                i += 1
+              if key[i+1] == '*':
+                i += 2
               # set_trace()
                 while(i < strlen and key[i] != '*'):
                   exponent += key[i]
                   i += 1 
+                i += 1
               else:
                 exponent = '1'
+                i += 1
           resinner.append((num, exponent, key))
-          print(i,resinner)
+          # print(i,resinner)
         res.append(resinner)
-        print(res)
+        # print(res)
         # set_trace()
 
         # coeffs[int(keystr[1])][int(keystr[-1])] = coeffdict[key]
       # set_trace()
-    print('res final', res)
+    # print('res final', res)
     if coeff0 is not None:
       x = coeff0
     else:
@@ -174,7 +178,7 @@ def worker_svd(inputs):
       # else:
       #   set_trace()
       #   x += coeffs[r[2]]*cp.power(k[int(r[0])],-int(r[1]))
-    print('x',x)
+    # print('x',x)
     obj = x*cp.prod(cp.inv_pos(p)) * np.prod(1/(S*G2_diag[:Mu]))
     # print(obj.is_dgp())
     # set_trace()
@@ -238,7 +242,7 @@ def run(M=None, *args):
     worker_svd(inputs[-1])
     return
   
-  with Pool(processes=6) as pool:
+  with Pool() as pool:
     # pool.map(worker_allpass, inputs)
     for _ in tqdm.tqdm(pool.imap_unordered(worker_svd, inputs), total=len(inputs)):
       pass
@@ -255,4 +259,4 @@ def run(M=None, *args):
 if __name__ == '__main__':
   # run('single')
   for M in [3,4,5]:
-    run(M, 'single')
+    run(M)
