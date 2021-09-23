@@ -253,10 +253,12 @@ def run(M=None, *args):
     results[nP, nsamp] = e['sumrate']
 
   print(np.mean(results, axis=1))
+  return np.mean(results, axis=1)
 
 
 
 if __name__ == '__main__':
   # run('single')
+  res = []
   for M in [2,3,4,5]:
-    run(M)
+    res.append(run(M))
