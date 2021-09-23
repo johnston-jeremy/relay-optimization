@@ -122,7 +122,7 @@ def worker_allpass(inputs):
     v_opt = gs_opt*h[:Mu] + sigma2**2
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
-    print(sumrate)
+    # print(sumrate)
 
     W = gs_opt*np.eye(Mr)
     F = Qeq.T.conj() @ np.diag(np.sqrt(p_opt))
@@ -133,7 +133,7 @@ def worker_allpass(inputs):
       v_opt[i] += interference
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
-    print(sumrate)
+    # print(sumrate)
     # set_trace()
 
     sumrate_trials.append(sumrate)
