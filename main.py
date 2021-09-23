@@ -150,7 +150,7 @@ def worker_svd(inputs):
   Pt = Pr =  Plist[nP]
   sumrate_trials = []
   H1 = H1all[nsamp]
-  H2 = H2all[nsamp]
+  H2_original = H2all[nsamp]
 
   # Q = cp.Variable(shape=(H1.shape[1],H1.shape[1]), PSD=True)
   # obj = cp.log_det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@Q@(H1.T.conj()))
@@ -180,8 +180,9 @@ def worker_svd(inputs):
   for ntrial in range(10):
   # for perm in multiset_permutations(np.arange(Nu)):
     Pi = np.eye(Nu)[np.random.permutation(Nu)]
+    H2 = Pi@H2_original
     # Pi = np.eye(Nu)[perm]
-    Q2, G2 = la.qr((Pi@H2).T.conj())
+    Q2, G2 = la.qr((H2).T.conj())
     Q2 = Q2.T.conj()
     G2 = G2.T.conj()
 
