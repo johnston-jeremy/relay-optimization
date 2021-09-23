@@ -290,6 +290,6 @@ if __name__ == '__main__':
   for method in ['svd','allpass']:
     # for M in [2,3,4,5]:
     for Nu in [2,5,10,15,20]:
-      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=True))
+      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=False))
   print(method)
   print(res)
