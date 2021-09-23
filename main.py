@@ -116,6 +116,7 @@ def worker_svd(inputs):
     coeff0 = None
     coeffs = [{}]*Mu
     res = []
+    print(coeffdict)
     for key in coeffdict:
       # print(key)
       # keystr = str(key)
