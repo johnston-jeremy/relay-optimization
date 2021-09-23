@@ -75,6 +75,13 @@ def worker_svd(inputs):
   H1 = H1all[nsamp]
   H2 = H2all[nsamp]
 
+  Q = cp.Variable(shape=(H1.shape[1],H1.shape[1]), PSD=True)
+  obj = cp.log_det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@Q@H1.T.conj())
+  constraints = [cp.trace(Q) <= Pt]
+  prob = cp.Problem(cp.Maximize(obj), constraints)
+  prob.solve(solver='MOSEK')
+  set_trace()
+
   for ntrial in range(10):
     Pi = np.eye(Nu)[np.random.permutation(Nu)]
     Q2, G2 = la.qr((Pi@H2).T.conj())
@@ -207,9 +214,9 @@ def worker_svd(inputs):
   sumrate_max = np.max(sumrate_trials)
 
   E.append({'ind':ind, 'sumrate':sumrate_max})
-  # print(len(E))
+  print(sumrate_max)
 
-def run(Mr, Mb, Nu, method, *args):
+def run(Mr, Mb, Nu, method, single):
   # if M is not None:
   #   Mr = Mb = M
   # else:
@@ -246,7 +253,7 @@ def run(Mr, Mb, Nu, method, *args):
   E = manager.list()
   inputs = list(zip([E]*Nsamp*numP, [H1all]*Nsamp*numP, [H2all]*Nsamp*numP, [params]*Nsamp*numP, ind))
   
-  if 'single' in args:
+  if single == True:
     worker_svd(inputs[-1])
     return
   
@@ -276,6 +283,6 @@ if __name__ == '__main__':
   for method in ['svd','allpass']:
     # for M in [2,3,4,5]:
     for Nu in [2,5,10,15,20]:
-      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method))
+      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=True))
   print(method)
   print(res)
