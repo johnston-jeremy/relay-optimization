@@ -259,11 +259,13 @@ def worker_svd(inputs):
     # set_trace()
     W = Q2.T.conj()[:,:Mu] @ np.diag(k_opt) @ (U.T.conj()[:Mu])
     F = Vh.T.conj() @ np.diag(np.sqrt(p_opt))
+    v_opt = np.zeros(Mu)
     for i in range(Mu):
       indexes = list(range(Mu))
       indexes.pop(i)
       interference = sum([np.abs(H2[i].T.conj()@W@H1@F[:,l])**2 for l in indexes])
       v_opt[i] += interference
+      v_opt[i] += np.linalg.norm(H2[i].T.conj()@F)**2 * sigma1**2 + sigma2**2
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
     # print(sumrate)
