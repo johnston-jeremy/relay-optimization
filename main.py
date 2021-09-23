@@ -148,7 +148,7 @@ def worker_svd(inputs):
                 exponent = '1'
           resinner.append((num, exponent, key))
         res.append(resinner)
-        # print(res)
+        print(res)
         # set_trace()
 
         # coeffs[int(keystr[1])][int(keystr[-1])] = coeffdict[key]
