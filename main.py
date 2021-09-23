@@ -76,11 +76,12 @@ def worker_svd(inputs):
   H2 = H2all[nsamp]
 
   Q = cp.Variable(shape=(H1.shape[1],H1.shape[1]), PSD=True)
-  obj = cp.log_det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@Q@H1.T.conj())
+  obj = cp.log_det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@Q@(H1.T.conj()))
   constraints = [cp.trace(Q) <= Pt]
   prob = cp.Problem(cp.Maximize(obj), constraints)
-  prob.solve(solver='MOSEK')
-  set_trace()
+  prob.solve()
+  upperbound = prob.value
+  # set_trace()
 
   for ntrial in range(10):
     Pi = np.eye(Nu)[np.random.permutation(Nu)]
@@ -213,7 +214,7 @@ def worker_svd(inputs):
 
   sumrate_max = np.max(sumrate_trials)
 
-  E.append({'ind':ind, 'sumrate':sumrate_max})
+  E.append({'ind':ind, 'sumrate':sumrate_max, 'upperbound':upperbound})
   print(sumrate_max)
 
 def run(Mr, Mb, Nu, method, single):
@@ -266,11 +267,17 @@ def run(Mr, Mb, Nu, method, single):
         pass
   
   results = np.empty((numP, Nsamp))
+  upperbound = np.empty((numP, Nsamp))
   for e in E:
     nsamp, nP = e['ind']
     results[nP, nsamp] = e['sumrate']
+    if method == 'svd':
+      upperbound[nP,nsamp] = e['upperbound']
 
-  print(np.mean(results, axis=1))
+  print(method, np.mean(results, axis=1))
+  if method == 'svd':
+    print('upper bound', np.mean(upperbound, axis=1))
+
   return np.mean(results, axis=1)
 
 
