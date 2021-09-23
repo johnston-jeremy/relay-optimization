@@ -4,11 +4,14 @@ from numpy import array
 
 # sumrate vs SNR
 fig1, ax1 = plt.subplots()
-SNR = 10*np.logspace(0.5,3,6)
+SNR = 10*np.log10(np.logspace(0.5,3,6))
 allpass = [1.09603709, 2.1958357,  3.58552014, 5.16961044, 6.78666348, 8.34874453]
 svd = [ 2.11664617,  3.71246185,  5.42572665,  7.03303682,  8.73288853, 10.40114732]
-ax1.plot(SNR, allpass)
-ax1.plot(SNR, svd)
+ax1.plot(SNR, allpass, marker='o')
+ax1.plot(SNR, svd, marker='o')
+ax1.grid(linestyle='--')
+ax1.legend(['Allpass', 'SVD'])
+
 
 
 # sumrate vs number of users

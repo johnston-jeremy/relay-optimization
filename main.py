@@ -58,20 +58,22 @@ def worker_allpass(inputs):
   Pt = Pr =  Plist[nP]
   sumrate_trials = []
   H1 = H1all[nsamp]
-  H2 = H2all[nsamp]
+  H2_original = H2all[nsamp]
+  
   for ntrial in range(10):
     Pi = np.eye(Nu)[np.random.permutation(Nu)]
-    Qeq, Geq = la.qr((Pi@H2@H1).T.conj())
+    H2 = Pi@H2_original
+    Qeq, Geq = la.qr((H2@H1).T.conj(), 'complete')
+
     Qeq = Qeq.T.conj()
     Geq = Geq.T.conj()
-    # set_trace()
 
     Geq_diag = np.abs(np.diag(Geq))**2
     # A = Qeq@(H1.T.conj())
     A = H1@(Qeq.T.conj())
     AHAdiag = np.array([np.linalg.norm(aa)**2 for aa in A.T])
 
-    h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in Pi@H2])
+    h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in H2])
 
     p = cp.Variable(Mu, pos=True)
     gs = cp.Variable(pos=True)
@@ -120,6 +122,19 @@ def worker_allpass(inputs):
     v_opt = gs_opt*h[:Mu] + sigma2**2
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
+    print(sumrate)
+
+    W = gs_opt*np.eye(Mr)
+    F = Qeq.T.conj() @ np.diag(np.sqrt(p_opt))
+    for i in range(Mu):
+      ind = list(range(Mu))
+      ind.pop(i)
+      interference = sum([np.abs(H2[i].T.conj()@W@H1@F[:,l])**2 for l in ind])
+      v_opt[i] += interference
+
+    sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
+    print(sumrate)
+    set_trace()
 
     sumrate_trials.append(sumrate)
 
@@ -172,7 +187,7 @@ def worker_svd(inputs):
 
     G2_diag = np.abs(np.diag(G2))**2
 
-    S = la.svd(H1, compute_uv=False)
+    U, S, Vh = la.svd(H1)
     # A = Qeq@(H1.T.conj())
     # A = H1@(Qeq.T.conj())
     # AHAdiag = np.array([np.linalg.norm(aa)**2 for aa in A.T])
@@ -241,6 +256,8 @@ def worker_svd(inputs):
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
     # print(sumrate)
     sumrate_trials.append(sumrate)
+
+    set_trace()
 
   sumrate_max = np.max(sumrate_trials)
 
