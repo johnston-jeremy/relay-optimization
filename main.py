@@ -134,7 +134,7 @@ def worker_allpass(inputs):
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
     print(sumrate)
-    set_trace()
+    # set_trace()
 
     sumrate_trials.append(sumrate)
 
