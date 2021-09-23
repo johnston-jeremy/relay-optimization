@@ -182,7 +182,7 @@ def worker_svd(inputs):
     Pi = np.eye(Nu)[np.random.permutation(Nu)]
     H2 = Pi@H2_original
     # Pi = np.eye(Nu)[perm]
-    Q2, G2 = la.qr((H2).T.conj())
+    Q2, G2 = la.qr(H2.T.conj())
     Q2 = Q2.T.conj()
     G2 = G2.T.conj()
 
@@ -351,12 +351,12 @@ if __name__ == '__main__':
   res = []
   
   # M = None
-  Nu = 5
+  Nu = 4
   for method in ['svd','allpass']:
   # for method in ['svd']:
     # for M in [2,3,4,5]:
     # for Nu in [2,5,10,15,20]:
       print('Nu =', Nu)
-      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=False))
+      res.append(run(Mr=4, Mb=4, Nu=Nu, method=method, single=False))
   print(method)
   print(res)
