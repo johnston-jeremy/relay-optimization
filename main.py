@@ -209,13 +209,14 @@ def worker_svd(inputs):
   E.append({'ind':ind, 'sumrate':sumrate_max})
   # print(len(E))
 
-def run(M, method, *args):
-  if M is not None:
-    Mr = Mb = M
-  else:
-    Mr = 3 # number of relay antennas
-    Mb = 2 # number of BS antennas
-  Nu = 5 # number of users
+def run(Mr, Mb, Nu, method, *args):
+  # if M is not None:
+  #   Mr = Mb = M
+  # else:
+  #   Mr = 3 # number of relay antennas
+  #   Mb = 2 # number of BS antennas
+
+  # Nu = 5 # number of users
   Mu = np.min([Nu,Mb,Mr])
   sigma1 = sigma2 = 1
 
@@ -224,8 +225,8 @@ def run(M, method, *args):
 
   Plist = np.logspace(0.5,3,numP)
 
-  # numP = 1
-  # Plist = [10**2]
+  numP = 1
+  Plist = [10**2]
   params = (Mr,Mb,Nu,Mu,sigma1,sigma2,Plist)
 
   H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(2)
@@ -270,9 +271,11 @@ def run(M, method, *args):
 if __name__ == '__main__':
   # run('single')
   res = []
-  # for M in [2,3,4,5]:
-  M = None
+  
+  # M = None
   for method in ['svd','allpass']:
-    res.append(run(M=M, method=method))
+    # for M in [2,3,4,5]:
+    for Nu in [2,5,10,15,20]:
+      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method))
   print(method)
   print(res)
