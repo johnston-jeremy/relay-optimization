@@ -202,7 +202,7 @@ def worker_svd(inputs):
   E.append({'ind':ind, 'sumrate':sumrate_max})
   # print(len(E))
 
-def run(M=None, *args):
+def run(M, method, *args):
   if M is not None:
     Mr = Mb = M
   else:
@@ -243,9 +243,12 @@ def run(M=None, *args):
     return
   
   with Pool() as pool:
-    # pool.map(worker_allpass, inputs)
-    for _ in tqdm.tqdm(pool.imap_unordered(worker_svd, inputs), total=len(inputs)):
-      pass
+    if method == 'svd':
+      for _ in tqdm.tqdm(pool.imap_unordered(worker_svd, inputs), total=len(inputs)):
+        pass
+    elif method == 'allpass':
+      for _ in tqdm.tqdm(pool.imap_unordered(worker_allpass, inputs), total=len(inputs)):
+        pass
   
   results = np.empty((numP, Nsamp))
   for e in E:
@@ -261,5 +264,5 @@ if __name__ == '__main__':
   # run('single')
   res = []
   for M in [2,3,4,5]:
-    res.append(run(M))
+    res.append(run(M=M, method='allpass'))
   print(res)
