@@ -35,21 +35,20 @@ def worker_allpass(inputs):
     C1 = [gs*AHAdiag@p + Mr*sigma1**2*gs <= Pr]
     C2 = [cp.sum(p) <= Pt]
 
-    a  = (1/Geq_diag[:Mu]) * h[:Mu]
-    b = (1/Geq_diag) * sigma2**2
+    a  = h[:Mu]
     x = symbols('x')
     exp = 1
-    for aa,bb in zip(a,b):
-      exp = exp * (aa + bb*x)
+    for aa in a:
+      exp = exp * (aa + sigma2**2*x)
     expanded = expand(exp)
     coeffdict = expanded.as_coefficients_dict()
     coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
-
+    set_trace()
     x = coeffs[0]
-    for i in range(1, len(a)+1):
+    for i in range(1, len(coeffs)):
       x += coeffs[i]*cp.power(gs,-i)
 
-    obj = x*cp.prod(cp.inv_pos(p))
+    obj = x*cp.prod(cp.inv_pos(p))*np.prod(1/Geq_diag[:Mu])
     constraints = C1+C2
     prob = cp.Problem(cp.Minimize(obj), constraints)
     prob.solve(gp=True, solver='ECOS')
@@ -276,7 +275,8 @@ def run(Mr, Mb, Nu, method, single):
   inputs = list(zip([E]*Nsamp*numP, [H1all]*Nsamp*numP, [H2all]*Nsamp*numP, [params]*Nsamp*numP, ind))
   
   if single == True:
-    worker_svd(inputs[-1])
+    # worker_svd(inputs[-1])
+    worker_allpass(inputs[-1])
     return
   
   with Pool() as pool:
@@ -309,7 +309,8 @@ if __name__ == '__main__':
   
   # M = None
   Nu = 5
-  for method in ['svd','allpass']:
+  # for method in ['svd','allpass']:
+  for method in ['allpass']:
     # for M in [2,3,4,5]:
     # for Nu in [2,5,10,15,20]:
       print('Nu =', Nu)
