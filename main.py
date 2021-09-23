@@ -351,12 +351,12 @@ if __name__ == '__main__':
   res = []
   
   # M = None
-  Nu = 4
+  Nu = 5
   for method in ['svd','allpass']:
   # for method in ['svd']:
     # for M in [2,3,4,5]:
     # for Nu in [2,5,10,15,20]:
       print('Nu =', Nu)
-      res.append(run(Mr=4, Mb=4, Nu=Nu, method=method, single=False))
+      res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=False))
   print(method)
   print(res)

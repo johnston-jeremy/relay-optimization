@@ -11,6 +11,8 @@ ax1.plot(SNR, allpass, marker='o')
 ax1.plot(SNR, svd, marker='o')
 ax1.grid(linestyle='--')
 ax1.legend(['Allpass', 'SVD'])
+ax1.set_xlabel('SNR [dB]')
+ax1.set_ylabel('Sum Rate')
 
 
 
