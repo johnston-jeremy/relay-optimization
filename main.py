@@ -262,3 +262,4 @@ if __name__ == '__main__':
   res = []
   for M in [2,3,4,5]:
     res.append(run(M))
+  print(res)
