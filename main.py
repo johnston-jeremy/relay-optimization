@@ -129,28 +129,35 @@ def worker_svd(inputs):
         # print(key)
         # set_trace()
 
+        # walk through key
         while(i < strlen):
+          # check if new monomial
           if key[i] == 'x':
             i += 1
             num = ''
             exponent = ''
+            # extract index
             while(i < strlen and key[i] != '*'):
               num += key[i]
               i += 1
+            # check if reached the end of key
             if i == strlen:
               exponent = '1'
               pass
+            # check next character
             elif key[i] == '*':
-              if key[i+1] == '*':
-                i += 2
-              # set_trace()
+              i += 1
+              # check next character. if true, then there is an exponent.
+              if key[i] == '*':
+                i += 1
+                # extract exponent              
                 while(i < strlen and key[i] != '*'):
                   exponent += key[i]
                   i += 1 
                 i += 1
+              # if there was no exponent
               else:
                 exponent = '1'
-                i += 1
           resinner.append((num, exponent, key))
           # print(i,resinner)
         res.append(resinner)
@@ -265,7 +272,7 @@ if __name__ == '__main__':
   res = []
   # for M in [2,3,4,5]:
   M = None
-  for method in ['allpass', 'svd']:
+  for method in ['svd','allpass']:
     res.append(run(M=M, method=method))
   print(method)
   print(res)
