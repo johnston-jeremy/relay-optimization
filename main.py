@@ -148,6 +148,7 @@ def worker_svd(inputs):
               else:
                 exponent = '1'
           resinner.append((num, exponent, key))
+          print(i,resinner)
         res.append(resinner)
         print(res)
         # set_trace()
