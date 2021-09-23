@@ -177,10 +177,10 @@ def worker_svd(inputs):
 
   # set_trace()
   
-  # for ntrial in range(np.math.factorial(Nu)):
-  for perm in multiset_permutations(np.arange(Nu)):
-    # Pi = np.eye(Nu)[np.random.permutation(Nu)]
-    Pi = np.eye(Nu)[perm]
+  for ntrial in range(10):
+  # for perm in multiset_permutations(np.arange(Nu)):
+    Pi = np.eye(Nu)[np.random.permutation(Nu)]
+    # Pi = np.eye(Nu)[perm]
     Q2, G2 = la.qr((Pi@H2).T.conj())
     Q2 = Q2.T.conj()
     G2 = G2.T.conj()
@@ -255,9 +255,22 @@ def worker_svd(inputs):
     # set_trace()
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
     # print(sumrate)
+
+    # set_trace()
+    W = Q2.T.conj()[:,:Mu] @ np.diag(k_opt) @ (U.T.conj()[:Mu])
+    F = Vh.T.conj() @ np.diag(np.sqrt(p_opt))
+    for i in range(Mu):
+      indexes = list(range(Mu))
+      indexes.pop(i)
+      interference = sum([np.abs(H2[i].T.conj()@W@H1@F[:,l])**2 for l in indexes])
+      v_opt[i] += interference
+
+    sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
+    # print(sumrate)
+    # set_trace()
+
     sumrate_trials.append(sumrate)
 
-    set_trace()
 
   sumrate_max = np.max(sumrate_trials)
 
@@ -302,7 +315,7 @@ def run(Mr, Mb, Nu, method, single):
   inputs = list(zip([E]*Nsamp*numP, [H1all]*Nsamp*numP, [H2all]*Nsamp*numP, [params]*Nsamp*numP, ind))
   
   if single == True:
-    # worker_svd(inputs[-1])
+    worker_svd(inputs[-1])
     worker_allpass(inputs[-1])
     return
   
@@ -337,7 +350,7 @@ if __name__ == '__main__':
   # M = None
   Nu = 5
   # for method in ['svd','allpass']:
-  for method in ['allpass']:
+  for method in ['allpass','svd']:
     # for M in [2,3,4,5]:
     # for Nu in [2,5,10,15,20]:
       print('Nu =', Nu)
