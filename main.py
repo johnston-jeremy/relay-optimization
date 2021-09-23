@@ -351,8 +351,8 @@ if __name__ == '__main__':
   
   # M = None
   Nu = 5
-  # for method in ['svd','allpass']:
-  for method in ['svd']:
+  for method in ['svd','allpass']:
+  # for method in ['svd']:
     # for M in [2,3,4,5]:
     # for Nu in [2,5,10,15,20]:
       print('Nu =', Nu)
