@@ -71,11 +71,11 @@ def worker_allpass(inputs):
     A = H1@(Qeq.T.conj())
     AHAdiag = np.array([np.linalg.norm(aa)**2 for aa in A.T])
 
-    h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in H2])
+    h = np.array([np.linalg.norm(hi2)**2*sigma1**2 for hi2 in Pi@H2])
 
     p = cp.Variable(Mu, pos=True)
     gs = cp.Variable(pos=True)
-
+    set_trace()
     C1 = [gs*AHAdiag@p + Mr*sigma1**2*gs <= Pr]
     C2 = [cp.sum(p) <= Pt]
 
@@ -95,7 +95,7 @@ def worker_allpass(inputs):
       x = coeff0
     else:
       x = 0
-
+    set_trace()
     for r in res:
       term = 1
       for rr in r:
@@ -194,6 +194,7 @@ def worker_svd(inputs):
       for j in range(i+1):
         expsum += np.abs(G2[i,j])**2 * sigma1**2 + x[j] * sigma2**2
       exp = exp * expsum
+
     expanded = expand(exp)
     coeffdictsym = expanded.as_coefficients_dict()
     coeffdict = {}
