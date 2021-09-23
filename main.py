@@ -5,6 +5,7 @@ import cvxpy as cp
 from pdb import set_trace
 from sympy import expand, symbols
 import tqdm
+from sympy.utilities.iterables import multiset_permutations
 
 
 def worker_allpass(inputs):
@@ -99,9 +100,11 @@ def worker_svd(inputs):
 
 
   # set_trace()
-
-  for ntrial in range(20):
-    Pi = np.eye(Nu)[np.random.permutation(Nu)]
+  
+  # for ntrial in range(np.math.factorial(Nu)):
+  for perm in multiset_permutations(np.arange(Nu)):
+    # Pi = np.eye(Nu)[np.random.permutation(Nu)]
+    Pi = np.eye(Nu)[perm]
     Q2, G2 = la.qr((Pi@H2).T.conj())
     Q2 = Q2.T.conj()
     G2 = G2.T.conj()
