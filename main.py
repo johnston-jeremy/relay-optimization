@@ -153,7 +153,7 @@ def worker_svd(inputs):
 
         # coeffs[int(keystr[1])][int(keystr[-1])] = coeffdict[key]
       # set_trace()
-
+    print(res)
     if coeff0 is not None:
       x = coeff0
     else:
