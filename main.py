@@ -100,7 +100,7 @@ def worker_svd(inputs):
 
   # set_trace()
 
-  for ntrial in range(10):
+  for ntrial in range(20):
     Pi = np.eye(Nu)[np.random.permutation(Nu)]
     Q2, G2 = la.qr((Pi@H2).T.conj())
     Q2 = Q2.T.conj()
