@@ -75,12 +75,29 @@ def worker_svd(inputs):
   H1 = H1all[nsamp]
   H2 = H2all[nsamp]
 
-  Q = cp.Variable(shape=(H1.shape[1],H1.shape[1]), PSD=True)
-  obj = cp.log_det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@Q@(H1.T.conj()))
-  constraints = [cp.trace(Q) <= Pt]
-  prob = cp.Problem(cp.Maximize(obj), constraints)
-  prob.solve()
-  upperbound = prob.value
+  # Q = cp.Variable(shape=(H1.shape[1],H1.shape[1]), PSD=True)
+  # obj = cp.log_det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@Q@(H1.T.conj()))
+  # constraints = [cp.trace(Q) <= Pt]
+  # prob = cp.Problem(cp.Maximize(obj), constraints)
+  # prob.solve()
+  # upperbound = prob.value
+
+  w,v = la.eig(H1.T.conj()@H1)
+  q = np.zeros(w.shape[0])
+  mu = [0,1000]
+  while(mu[1]-mu[0]>1e-2):
+    q = np.clip(np.mean(mu) - 1/w, 0, None)
+    if sum(q) > Pt:
+      mu[1] = np.mean(mu)
+    else:
+      mu[0] = np.mean(mu)
+    # print(mu)
+  upperbound = np.log2(la.det(np.eye(H1.shape[0]) + (1/sigma1**2)*H1@np.diag(q)@(H1.T.conj()))).real/2
+  # print(upperbound/2)
+  # print(sum(np.clip(np.log2(mu[0]*w), 0, None)).real/2)
+  # set_trace()
+
+
   # set_trace()
 
   for ntrial in range(10):
@@ -290,6 +307,7 @@ if __name__ == '__main__':
   for method in ['svd','allpass']:
     # for M in [2,3,4,5]:
     for Nu in [2,5,10,15,20]:
+      print('Nu =', Nu)
       res.append(run(Mr=3, Mb=2, Nu=Nu, method=method, single=False))
   print(method)
   print(res)
