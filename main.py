@@ -7,6 +7,49 @@ from sympy import expand, symbols
 import tqdm
 from sympy.utilities.iterables import multiset_permutations
 
+def parse(coeffdict):
+  res = []
+  coeff0 = None
+
+  for key in coeffdict:
+    if key[0] == '1':
+      coeff0 = coeffdict[key]
+    else: 
+      strlen = len(key)
+      i = 0
+      resinner = []
+      # walk through key
+      while(i < strlen):
+        # check if new monomial
+        if key[i] == 'x':
+          i += 1
+          num = ''
+          exponent = ''
+          # extract index
+          while(i < strlen and key[i] != '*'):
+            num += key[i]
+            i += 1
+          # check if reached the end of key
+          if i == strlen:
+            exponent = '1'
+            pass
+          # check next character
+          elif key[i] == '*':
+            i += 1
+            # check next character. if true, then there is an exponent.
+            if key[i] == '*':
+              i += 1
+              # extract exponent              
+              while(i < strlen and key[i] != '*'):
+                exponent += key[i]
+                i += 1 
+              i += 1
+            # if there was no exponent
+            else:
+              exponent = '1'
+        resinner.append((num, exponent, key))
+      res.append(resinner)
+  return res, coeff0    
 
 def worker_allpass(inputs):
   E, H1all, H2all, params, ind = inputs
@@ -21,6 +64,7 @@ def worker_allpass(inputs):
     Qeq, Geq = la.qr((Pi@H2@H1).T.conj())
     Qeq = Qeq.T.conj()
     Geq = Geq.T.conj()
+    # set_trace()
 
     Geq_diag = np.abs(np.diag(Geq))**2
     # A = Qeq@(H1.T.conj())
@@ -41,12 +85,30 @@ def worker_allpass(inputs):
     for aa in a:
       exp = exp * (aa + sigma2**2*x)
     expanded = expand(exp)
-    coeffdict = expanded.as_coefficients_dict()
-    coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
+    coeffdictsym = expanded.as_coefficients_dict()
+    coeffdict = {}
+    for i in coeffdictsym:
+      coeffdict[str(i)] = coeffdictsym[i]
+    res, coeff0 = parse(coeffdict)
+
+    if coeff0 is not None:
+      x = coeff0
+    else:
+      x = 0
+
+    for r in res:
+      term = 1
+      for rr in r:
+        # set_trace()
+        # term *= (coeffdict[rr[2]])**(1/len(r))*cp.power(k[int(rr[0])],-int(rr[1]))
+        term *= cp.power(gs,-int(rr[1]))
+      x += term * coeffdict[rr[2]]
+    
+    # coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
     # set_trace()
-    x = coeffs[0]
-    for i in range(1, len(coeffs)):
-      x += coeffs[i]*cp.power(gs,-i)
+    # x = coeffs[0]
+    # for i in range(1, len(coeffs)):
+    #   x += coeffs[i]*cp.power(gs,-i)
 
     obj = x*cp.prod(cp.inv_pos(p))*np.prod(1/Geq_diag[:Mu])
     constraints = C1+C2
@@ -139,61 +201,8 @@ def worker_svd(inputs):
       coeffdict[str(i)] = coeffdictsym[i]
     # coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
 
-    # x = coeffs[0]
-    coeff0 = None
-    coeffs = [{}]*Mu
-    res = []
-    # print(coeffdict)
-    for key in coeffdict:
-      # print(key)
-      # keystr = str(key)
-      if key[0] == '1':
-        coeff0 = coeffdict[key]
-      else: 
-        strlen = len(key)
-        i = 0
-        resinner = []
-        # print(key)
-        # set_trace()
+    res, coeff0 = parse(coeffdict)
 
-        # walk through key
-        while(i < strlen):
-          # check if new monomial
-          if key[i] == 'x':
-            i += 1
-            num = ''
-            exponent = ''
-            # extract index
-            while(i < strlen and key[i] != '*'):
-              num += key[i]
-              i += 1
-            # check if reached the end of key
-            if i == strlen:
-              exponent = '1'
-              pass
-            # check next character
-            elif key[i] == '*':
-              i += 1
-              # check next character. if true, then there is an exponent.
-              if key[i] == '*':
-                i += 1
-                # extract exponent              
-                while(i < strlen and key[i] != '*'):
-                  exponent += key[i]
-                  i += 1 
-                i += 1
-              # if there was no exponent
-              else:
-                exponent = '1'
-          resinner.append((num, exponent, key))
-          # print(i,resinner)
-        res.append(resinner)
-        # print(res)
-        # set_trace()
-
-        # coeffs[int(keystr[1])][int(keystr[-1])] = coeffdict[key]
-      # set_trace()
-    # print('res final', res)
     if coeff0 is not None:
       x = coeff0
     else:
