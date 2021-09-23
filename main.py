@@ -196,7 +196,7 @@ def worker_svd(inputs):
   E.append({'ind':ind, 'sumrate':sumrate_max})
   # print(len(E))
 
-def run(*args):
+def run(M=None, *args):
   Mr = 3 # number of relay antennas
   Mb = 2 # number of BS antennas
   Nu = 5 # number of users
@@ -207,10 +207,13 @@ def run(*args):
   Nsamp = 100
 
   Plist = np.logspace(0.5,3,numP)
+
+  numP = 1
+  Plist = [10**2]
   params = (Mr,Mb,Nu,Mu,sigma1,sigma2,Plist)
 
-  H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(.2)
-  H2all = (np.random.randn(Nsamp, Nu, Mr) + 1j*np.random.randn(Nsamp, Nu, Mr))/np.sqrt(.2)
+  H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(2)
+  H2all = (np.random.randn(Nsamp, Nu, Mr) + 1j*np.random.randn(Nsamp, Nu, Mr))/np.sqrt(2)
 
   H1mp = []
   H2mp = []
@@ -246,4 +249,5 @@ def run(*args):
 
 if __name__ == '__main__':
   # run('single')
-  run()
+  for M in [2,3,4,5]:
+    run(M)
