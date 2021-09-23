@@ -127,9 +127,9 @@ def worker_allpass(inputs):
     W = gs_opt*np.eye(Mr)
     F = Qeq.T.conj() @ np.diag(np.sqrt(p_opt))
     for i in range(Mu):
-      ind = list(range(Mu))
-      ind.pop(i)
-      interference = sum([np.abs(H2[i].T.conj()@W@H1@F[:,l])**2 for l in ind])
+      indexes = list(range(Mu))
+      indexes.pop(i)
+      interference = sum([np.abs(H2[i].T.conj()@W@H1@F[:,l])**2 for l in indexes])
       v_opt[i] += interference
 
     sumrate = 0.5 * np.sum([np.log2(1+di*pi/vi) for di,pi,vi in zip(d_opt,p_opt,v_opt)])
