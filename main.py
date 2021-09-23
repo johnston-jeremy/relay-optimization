@@ -44,8 +44,8 @@ def worker_allpass(inputs):
     coeffdict = expanded.as_coefficients_dict()
     coeffs = np.array([float(coeffdict[1])] + [float(coeffdict[x**k]) for k in range(1, len(a)+1)])
     # set_trace()
-    # x = coeffs[0]
-    for i in range(len(coeffs)):
+    x = coeffs[0]
+    for i in range(1, len(coeffs)):
       x += coeffs[i]*cp.power(gs,-i)
 
     obj = x*cp.prod(cp.inv_pos(p))*np.prod(1/Geq_diag[:Mu])
