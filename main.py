@@ -215,7 +215,7 @@ def worker_svd(inputs):
   sumrate_max = np.max(sumrate_trials)
 
   E.append({'ind':ind, 'sumrate':sumrate_max, 'upperbound':upperbound})
-  print(sumrate_max)
+  # print(sumrate_max)
 
 def run(Mr, Mb, Nu, method, single):
   # if M is not None:
