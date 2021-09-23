@@ -217,8 +217,8 @@ def run(M, method, *args):
 
   Plist = np.logspace(0.5,3,numP)
 
-  numP = 1
-  Plist = [10**2]
+  # numP = 1
+  # Plist = [10**2]
   params = (Mr,Mb,Nu,Mu,sigma1,sigma2,Plist)
 
   H1all = (np.random.randn(Nsamp, Mr, Mb) + 1j*np.random.randn(Nsamp, Mr, Mb))/np.sqrt(2)
@@ -263,6 +263,9 @@ def run(M, method, *args):
 if __name__ == '__main__':
   # run('single')
   res = []
-  for M in [2,3,4,5]:
-    res.append(run(M=M, method='allpass'))
+  # for M in [2,3,4,5]:
+  M = None
+  for method in ['allpass', 'svd']:
+    res.append(run(M=M, method=method))
+  print(method)
   print(res)
