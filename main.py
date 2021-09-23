@@ -233,7 +233,7 @@ def run(M=None, *args):
   inputs = list(zip([E]*Nsamp*numP, [H1all]*Nsamp*numP, [H2all]*Nsamp*numP, [params]*Nsamp*numP, ind))
   
   if 'single' in args:
-    worker_svd(inputs[0])
+    worker_svd(inputs[-1])
     return
   
   with Pool(processes=6) as pool:
@@ -253,4 +253,4 @@ def run(M=None, *args):
 if __name__ == '__main__':
   # run('single')
   for M in [3,4,5]:
-    run(M)
+    run(M, 'single')
