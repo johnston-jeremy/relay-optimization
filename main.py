@@ -75,7 +75,7 @@ def worker_allpass(inputs):
 
     p = cp.Variable(Mu, pos=True)
     gs = cp.Variable(pos=True)
-    set_trace()
+    # set_trace()
     C1 = [gs*AHAdiag@p + Mr*sigma1**2*gs <= Pr]
     C2 = [cp.sum(p) <= Pt]
 
@@ -95,7 +95,7 @@ def worker_allpass(inputs):
       x = coeff0
     else:
       x = 0
-    set_trace()
+    # set_trace()
     for r in res:
       term = 1
       for rr in r:
