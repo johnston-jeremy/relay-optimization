@@ -197,8 +197,11 @@ def worker_svd(inputs):
   # print(len(E))
 
 def run(M=None, *args):
-  Mr = 3 # number of relay antennas
-  Mb = 2 # number of BS antennas
+  if M is not None:
+    Mr = Mb = M
+  else:
+    Mr = 3 # number of relay antennas
+    Mb = 2 # number of BS antennas
   Nu = 5 # number of users
   Mu = np.min([Nu,Mb,Mr])
   sigma1 = sigma2 = 1
